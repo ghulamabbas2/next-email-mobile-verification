@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import User from "../../../models/user.model";
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/config/dbConnect";
+import { sendEmail } from "@/utils/sendEmail";
+import { verificationEmailTemplate } from "@/utils/verificationEmailTemplate";
 
 export async function POST(request: Request) {
   try {
@@ -21,6 +23,14 @@ export async function POST(request: Request) {
       password: hashedPassword,
       phoneNo,
     });
+
+    const verificationToken = newUser.getVerificationToken();
+    await newUser.save();
+
+    const verificationLink = `${process.env.NEXT_PUBLIC_URL}/verify-email?verifyToken=${verificationToken}&id=${newUser?._id}`;
+    const message = verificationEmailTemplate(verificationLink);
+    // Send verification email
+    await sendEmail(newUser?.email, "Email Verification", message);
 
     return NextResponse.json(
       { message: "User created successfully" },

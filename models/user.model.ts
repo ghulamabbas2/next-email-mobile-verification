@@ -4,7 +4,10 @@ import crypto from "crypto";
 export interface IUser extends Document {
   name: string;
   email: string;
-  phoneNo: string;
+  phoneNo: {
+    value: string;
+    isVerified: boolean;
+  };
   password: string;
   isVerified: boolean;
   verifyToken: string;
@@ -23,9 +26,15 @@ const UserSchema: Schema<IUser> = new mongoose.Schema({
     unique: true,
   },
   phoneNo: {
-    type: String,
-    required: true,
-    unique: true,
+    value: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   password: {
     type: String,

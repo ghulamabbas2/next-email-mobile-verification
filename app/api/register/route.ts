@@ -21,7 +21,9 @@ export async function POST(request: Request) {
       name,
       email,
       password: hashedPassword,
-      phoneNo,
+      phoneNo: {
+        value: phoneNo,
+      },
     });
 
     const verificationToken = newUser.getVerificationToken();
